@@ -1,14 +1,31 @@
 HC       = ghc
-HC_OPTS  = -O2 -Wall $(EXTRA_HC_OPTS)
+HC_OPTS  = -Wall $(EXTRA_HC_OPTS)
 PACKAGES = -package mtl
 
-SRCS := $(shell find . -name "*.hs" -print)
+findSrcs = $(shell find -name '_darcs' -prune -o -name $(1) -print)
+findClean = find -name '_darcs' -prune -o -name $(1) -exec rm -f {} \;
+
+SRCS := $(call findSrcs,"*.hs") 
 OBJS = $(SRCS:.hs=.o)
 PROG = OptionCalculator
 
 .SUFFIXES : .o .hs .hi .lhs .hc .s
 
-${PROG} : $(OBJS)
+all : release
+
+profile : HC_OPTS += -prof -auto-all -caf-all -fforce-recomp
+profile : release
+
+graph : profile
+	./$(PROG) +RTS -hc -p -K100M
+	hp2ps -e8in -c $(PROG).hp
+
+release : HC_OPTS += -O2
+release : $(PROG)
+
+debug : $(PROG)
+
+$(PROG) : $(OBJS)
 	  rm -f $@
 	  $(HC) -o $@ $(PACKAGES) $(HC_OPTS) $(OBJS)
 
@@ -32,32 +49,23 @@ ${PROG} : $(OBJS)
 	$(HC) -c $< $(HC_OPTS)
 
 clean :
-	find . -name "*.hi" -exec rm -f {} \;
-	find . -name "*.o" -exec rm -f {} \;
-	find . -name "*~" -exec rm -r {} \;
-	find . -name "*.bak" -exec rm -r {} \;
-	rm -f ${PROG}
+	$(call findClean,"*.hi")
+	$(call findClean,"*.o") 
+	$(call findClean,"*~")  
+	rm -f $(PROG) $(PROG).aux $(PROG).hp $(PROG).prof $(PROG).ps Makefile.bak
 
 depend :
 	ghc -M $(HC_OPTS) $(SRCS)
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
+Misc/Debug.o : Misc/Debug.hs
 Random/Framework.o : Random/Framework.hs
 Random/Ranq1.o : Random/Ranq1.hs
 Random/Ranq1.o : Random/Framework.hi
+MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 Normal/Framework.o : Normal/Framework.hs
 Normal/Framework.o : Random/Framework.hi
-Normal/BoxMuller.o : Normal/BoxMuller.hs
-Normal/BoxMuller.o : Normal/Framework.hi
-Normal/BoxMuller.o : Random/Framework.hi
-Normal/Acklam.o : Normal/Acklam.hs
-Normal/Acklam.o : Normal/Framework.hi
-Normal/Acklam.o : Random/Framework.hi
-Normal/Interface.o : Normal/Interface.hs
-Normal/Interface.o : Normal/Acklam.hi
-Normal/Interface.o : Normal/BoxMuller.hi
-MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 MonteCarlo/Framework.o : MonteCarlo/Framework.hs
 MonteCarlo/Framework.o : MonteCarlo/DataStructures.hi
 MonteCarlo/Framework.o : Random/Framework.hi
@@ -72,7 +80,15 @@ MonteCarlo/Lookback.o : MonteCarlo/Framework.hi
 MonteCarlo/Interface.o : MonteCarlo/Interface.hs
 MonteCarlo/Interface.o : MonteCarlo/Lookback.hi
 MonteCarlo/Interface.o : MonteCarlo/European.hi
-Misc/Debug.o : Misc/Debug.hs
+Normal/Acklam.o : Normal/Acklam.hs
+Normal/Acklam.o : Normal/Framework.hi
+Normal/Acklam.o : Random/Framework.hi
+Normal/BoxMuller.o : Normal/BoxMuller.hs
+Normal/BoxMuller.o : Normal/Framework.hi
+Normal/BoxMuller.o : Random/Framework.hi
+Normal/Interface.o : Normal/Interface.hs
+Normal/Interface.o : Normal/Acklam.hi
+Normal/Interface.o : Normal/BoxMuller.hi
 Maths/Prime.o : Maths/Prime.hs
 Random/Halton.o : Random/Halton.hs
 Random/Halton.o : Maths/Prime.hi
