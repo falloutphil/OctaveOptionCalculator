@@ -1,4 +1,4 @@
-module Debug
+module Misc.Debug
    (
     tracePassThrough
    ) where
