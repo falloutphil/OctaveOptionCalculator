@@ -111,6 +111,11 @@
 (^|/)\.lock-wscript$
 # mac os finder
 (^|/)\.DS_Store$
-# Added by me - ignore build directory
+
+
+# ------ Added by me ------
+
+# Ignore build directories
 (^|/)build($|/)
+# Ignore built binary
 ^OptionCalculator$
