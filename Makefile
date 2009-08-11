@@ -1,7 +1,12 @@
 HC         = ghc
 BUILDDIR   = build/$(build)
 BINDIR     = bin/$(build)
+
 HC_OPTS    = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
+HC_OPTS_RELEASE = -O2
+HC_OPTS_DEBUG   =
+HC_OPTS_PROFILE =  -prof -auto-all -caf-all -O2
+
 HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
 
 PACKAGES  = -package mtl
@@ -20,23 +25,23 @@ _OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
 # binary this will work.
 OBJS = $(_OBJS:$(PROG).o=Main.o)
 
-# Key compile params on $(build)
-release = -O2
-debug   =
-profile =  -prof -auto-all -caf-all -O2
- 
+# default
+build = release
+# key on build= argument
+ifeq "$(build)" "profile"
+HC_OPTS += $(HC_OPTS_PROFILE)
+else
+ifeq "$(build)" "debug"
+HC_OPTS += $(HC_OPTS_DEBUG)
+else
+ifeq "$(build)" "release"
+HC_OPTS += $(HC_OPTS_RELEASE)
+endif
+endif
+endif
 
-profile : HC_OPTS += -prof -auto-all -caf-all -O2
-profile : $(PROG)
+all : $(PROG) 
 
-debug : $(PROG)
-
-release : HC_OPTS += -O2
-release : $(PROG)
-
-all : release	 
-
-graph : $(BINDIR)/$(PROG).ps
 
 $(PROG) : $(OBJS)
 	rm -f $(BINDIR)/$@
@@ -55,18 +60,14 @@ $(BUILDDIR)/%.o : %.hs
 $(BUILDDIR)/Main.o : $(PROG).hs
 	$(HC) -c $< $(HC_OPTS)
 
-# Create postscript file from profile run
 
-%.hp : profile
-	./$* +RTS -hc -p -K100M
-	mv *.hp $(BINDIR)
-	mv *.prof $(BINDIR)
+# Create postscript file from profile run
+%.hp : %
+	$(BINDIR)/$< +RTS -hc -p -K100M
+
 
 %.ps : %.hp
 	hp2ps -c $< $(HP2PS_OPTS)
-	mv *.aux $(BINDIR)
-	mv *.ps $(BINDIR)
-
 
 # Standard suffix rules
 
@@ -89,11 +90,11 @@ clean :
 	$(call findClean,./$(BUILDDIR),"*.hi")
 	$(call findClean,./$(BUILDDIR),"*.o") 
 	$(call findClean,./,"*~")  
-	rm -f $(BINDIR)/$(PROG) $(BINDIR)/$(PROG).aux $(BINDIR)/$(PROG).hp $(BINDIR)/$(PROG).prof $(BINDIR)/$(PROG).ps Makefile.bak
+	rm -f $(BINDIR)/$(PROG) $(PROG).aux $(PROG).hp Makefile.bak
 
 
 depend : 
-	$(HC) -M $(HC_OPTS) $($(build)) $(SRCS)
+	$(HC) -M $(HC_OPTS) $(SRCS)
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
