@@ -1,7 +1,10 @@
-HC       = ghc
-BUILDDIR   = build
-HC_OPTS  = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
-PACKAGES = -package mtl
+HC         = ghc
+BUILDDIR   = build/$(build)
+BINDIR     = bin/$(build)
+HC_OPTS    = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
+HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
+
+PACKAGES  = -package mtl
 
 findSrcs  = $(shell find . -name '_darcs' -prune -o -name $(1) -print)
 findClean = if [ -d $(1) ]; then find $(1) -name '_darcs' -prune -o -name $(2) -exec rm -f {} \; ; fi
@@ -17,23 +20,28 @@ _OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
 # binary this will work.
 OBJS = $(_OBJS:$(PROG).o=Main.o)
 
-all : release
+# Key compile params on $(build)
+release = -O2
+debug   =
+profile =  -prof -auto-all -caf-all -O2
+ 
 
-profile : HC_OPTS += -prof -auto-all -caf-all -fforce-recomp
-profile : release
+profile : HC_OPTS += -prof -auto-all -caf-all -O2
+profile : $(PROG)
 
-graph : profile
-	./$(PROG) +RTS -hc -p -K100M
-	hp2ps -e8in -c $(PROG).hp
+debug : $(PROG)
 
 release : HC_OPTS += -O2
 release : $(PROG)
 
-debug : $(PROG)
+all : release	 
+
+graph : $(BINDIR)/$(PROG).ps
 
 $(PROG) : $(OBJS)
-	  rm -f $@
-	  $(HC) -o $@ $(PACKAGES) $(HC_OPTS) $(OBJS)
+	rm -f $(BINDIR)/$@
+	mkdir -p $(BINDIR)
+	$(HC) -o $(BINDIR)/$@ $(PACKAGES) $(HC_OPTS) $(OBJS)
 
 # .o files are in our separate
 # directory.  This maps them
@@ -47,13 +55,25 @@ $(BUILDDIR)/%.o : %.hs
 $(BUILDDIR)/Main.o : $(PROG).hs
 	$(HC) -c $< $(HC_OPTS)
 
+# Create postscript file from profile run
+
+%.hp : profile
+	./$* +RTS -hc -p -K100M
+	mv *.hp $(BINDIR)
+	mv *.prof $(BINDIR)
+
+%.ps : %.hp
+	hp2ps -c $< $(HP2PS_OPTS)
+	mv *.aux $(BINDIR)
+	mv *.ps $(BINDIR)
+
 
 # Standard suffix rules
 
 # Clear suffixes
 .SUFFIXES :
 # Define ours
-.SUFFIXES : .o .hi
+.SUFFIXES : .o .hi 
 
 # This is a bit of a cheat.  Suffixes
 # allow us to say any.o to any_other.hi
@@ -69,61 +89,62 @@ clean :
 	$(call findClean,./$(BUILDDIR),"*.hi")
 	$(call findClean,./$(BUILDDIR),"*.o") 
 	$(call findClean,./,"*~")  
-	rm -f $(PROG) $(PROG).aux $(PROG).hp $(PROG).prof $(PROG).ps Makefile.bak
+	rm -f $(BINDIR)/$(PROG) $(BINDIR)/$(PROG).aux $(BINDIR)/$(PROG).hp $(BINDIR)/$(PROG).prof $(BINDIR)/$(PROG).ps Makefile.bak
 
-depend :
-	ghc -M $(HC_OPTS) $(SRCS)
+
+depend : 
+	$(HC) -M $(HC_OPTS) $($(build)) $(SRCS)
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
-build/Misc/Debug.o : Misc/Debug.hs
-build/Random/Framework.o : Random/Framework.hs
-build/Random/Ranq1.o : Random/Ranq1.hs
-build/Random/Ranq1.o : build/Random/Framework.hi
-build/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
-build/Normal/Framework.o : Normal/Framework.hs
-build/Normal/Framework.o : build/Random/Framework.hi
-build/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
-build/MonteCarlo/Framework.o : build/MonteCarlo/DataStructures.hi
-build/MonteCarlo/Framework.o : build/Random/Framework.hi
-build/MonteCarlo/Framework.o : build/Normal/Framework.hi
-build/MonteCarlo/European.o : MonteCarlo/European.hs
-build/MonteCarlo/European.o : build/Normal/Framework.hi
-build/MonteCarlo/European.o : build/MonteCarlo/Framework.hi
-build/MonteCarlo/Lookback.o : MonteCarlo/Lookback.hs
-build/MonteCarlo/Lookback.o : build/Normal/Framework.hi
-build/MonteCarlo/Lookback.o : build/MonteCarlo/DataStructures.hi
-build/MonteCarlo/Lookback.o : build/MonteCarlo/Framework.hi
-build/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
-build/MonteCarlo/Interface.o : build/MonteCarlo/Lookback.hi
-build/MonteCarlo/Interface.o : build/MonteCarlo/European.hi
-build/Normal/Acklam.o : Normal/Acklam.hs
-build/Normal/Acklam.o : build/Normal/Framework.hi
-build/Normal/Acklam.o : build/Random/Framework.hi
-build/Normal/BoxMuller.o : Normal/BoxMuller.hs
-build/Normal/BoxMuller.o : build/Normal/Framework.hi
-build/Normal/BoxMuller.o : build/Random/Framework.hi
-build/Normal/Interface.o : Normal/Interface.hs
-build/Normal/Interface.o : build/Normal/Acklam.hi
-build/Normal/Interface.o : build/Normal/BoxMuller.hi
-build/Maths/Prime.o : Maths/Prime.hs
-build/Random/Halton.o : Random/Halton.hs
-build/Random/Halton.o : build/Maths/Prime.hi
-build/Random/Halton.o : build/Random/Framework.hi
-build/Random/Interface.o : Random/Interface.hs
-build/Random/Interface.o : build/Random/Ranq1.hi
-build/Random/Interface.o : build/Random/Halton.hi
-build/FrameworkInterface.o : FrameworkInterface.hs
-build/FrameworkInterface.o : build/MonteCarlo/Framework.hi
-build/FrameworkInterface.o : build/Normal/Framework.hi
-build/FrameworkInterface.o : build/MonteCarlo/DataStructures.hi
-build/FrameworkInterface.o : build/MonteCarlo/Interface.hi
-build/FrameworkInterface.o : build/Normal/Interface.hi
-build/FrameworkInterface.o : build/Random/Interface.hi
-build/Main.o : OptionCalculator.hs
-build/Main.o : build/FrameworkInterface.hi
-build/Main.o : build/MonteCarlo/DataStructures.hi
-build/Main.o : build/MonteCarlo/Interface.hi
-build/Main.o : build/Normal/Interface.hi
-build/Main.o : build/Random/Interface.hi
+build/release/Misc/Debug.o : Misc/Debug.hs
+build/release/Random/Framework.o : Random/Framework.hs
+build/release/Random/Ranq1.o : Random/Ranq1.hs
+build/release/Random/Ranq1.o : build/release/Random/Framework.hi
+build/release/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
+build/release/Normal/Framework.o : Normal/Framework.hs
+build/release/Normal/Framework.o : build/release/Random/Framework.hi
+build/release/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
+build/release/MonteCarlo/Framework.o : build/release/MonteCarlo/DataStructures.hi
+build/release/MonteCarlo/Framework.o : build/release/Random/Framework.hi
+build/release/MonteCarlo/Framework.o : build/release/Normal/Framework.hi
+build/release/MonteCarlo/European.o : MonteCarlo/European.hs
+build/release/MonteCarlo/European.o : build/release/Normal/Framework.hi
+build/release/MonteCarlo/European.o : build/release/MonteCarlo/Framework.hi
+build/release/MonteCarlo/Lookback.o : MonteCarlo/Lookback.hs
+build/release/MonteCarlo/Lookback.o : build/release/Normal/Framework.hi
+build/release/MonteCarlo/Lookback.o : build/release/MonteCarlo/DataStructures.hi
+build/release/MonteCarlo/Lookback.o : build/release/MonteCarlo/Framework.hi
+build/release/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
+build/release/MonteCarlo/Interface.o : build/release/MonteCarlo/Lookback.hi
+build/release/MonteCarlo/Interface.o : build/release/MonteCarlo/European.hi
+build/release/Normal/Acklam.o : Normal/Acklam.hs
+build/release/Normal/Acklam.o : build/release/Normal/Framework.hi
+build/release/Normal/Acklam.o : build/release/Random/Framework.hi
+build/release/Normal/BoxMuller.o : Normal/BoxMuller.hs
+build/release/Normal/BoxMuller.o : build/release/Normal/Framework.hi
+build/release/Normal/BoxMuller.o : build/release/Random/Framework.hi
+build/release/Normal/Interface.o : Normal/Interface.hs
+build/release/Normal/Interface.o : build/release/Normal/Acklam.hi
+build/release/Normal/Interface.o : build/release/Normal/BoxMuller.hi
+build/release/Maths/Prime.o : Maths/Prime.hs
+build/release/Random/Halton.o : Random/Halton.hs
+build/release/Random/Halton.o : build/release/Maths/Prime.hi
+build/release/Random/Halton.o : build/release/Random/Framework.hi
+build/release/Random/Interface.o : Random/Interface.hs
+build/release/Random/Interface.o : build/release/Random/Ranq1.hi
+build/release/Random/Interface.o : build/release/Random/Halton.hi
+build/release/FrameworkInterface.o : FrameworkInterface.hs
+build/release/FrameworkInterface.o : build/release/MonteCarlo/Framework.hi
+build/release/FrameworkInterface.o : build/release/Normal/Framework.hi
+build/release/FrameworkInterface.o : build/release/MonteCarlo/DataStructures.hi
+build/release/FrameworkInterface.o : build/release/MonteCarlo/Interface.hi
+build/release/FrameworkInterface.o : build/release/Normal/Interface.hi
+build/release/FrameworkInterface.o : build/release/Random/Interface.hi
+build/release/Main.o : OptionCalculator.hs
+build/release/Main.o : build/release/FrameworkInterface.hi
+build/release/Main.o : build/release/MonteCarlo/DataStructures.hi
+build/release/Main.o : build/release/MonteCarlo/Interface.hi
+build/release/Main.o : build/release/Normal/Interface.hi
+build/release/Main.o : build/release/Random/Interface.hi
 # DO NOT DELETE: End of Haskell dependencies

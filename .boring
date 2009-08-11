@@ -117,5 +117,5 @@
 
 # Ignore build directories
 (^|/)build($|/)
-# Ignore built binary
-^OptionCalculator$
+# Ignore built binaries
+(^|/)bin($|/)
