@@ -16,10 +16,11 @@ newtype Lookback = Lookback (Double,Double)
    deriving (Show)
 
 instance McClass Lookback where
-   nextTimeStep userData = 
-      StateT $ \(Lookback (maxVal,s)) -> do norm <- nextNormal
-                                            let !newState = Lookback $ evolveLookback userData s norm maxVal
-                                            return ( () , newState )
+   nextTimeStep userData =
+      -- NOTE: Strict on the constituants of the tuple to prevent thunks 
+      StateT $ \(Lookback (!maxVal,!s)) -> do norm <- nextNormal
+                                              let newState = Lookback $ evolveLookback userData s norm maxVal
+                                              return ( () , newState )
    toValue (Lookback (maxVal,_)) = maxVal
 
 

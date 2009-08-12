@@ -120,5 +120,8 @@
 # Ignore built binaries
 (^|/)bin($|/)
 # Ignore profile output
-^OptionCalculator.prof$
+\.prof$
+\.aux$
+^OptionCalculator.pdf$
 ^OptionCalculator.ps$
+^OptionCalculator.jpg$

@@ -69,6 +69,16 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 %.ps : %.hp
 	hp2ps -c $< $(HP2PS_OPTS)
 
+# PDF conversion to rotate 90deg!
+%.pdf : %.ps
+	ps2pdf $<
+
+%.jpg : %.pdf
+	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
+
+
+
+
 # Standard suffix rules
 
 # Clear suffixes
@@ -98,54 +108,54 @@ depend :
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
-build/release/Misc/Debug.o : Misc/Debug.hs
-build/release/Random/Framework.o : Random/Framework.hs
-build/release/Random/Ranq1.o : Random/Ranq1.hs
-build/release/Random/Ranq1.o : build/release/Random/Framework.hi
-build/release/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
-build/release/Normal/Framework.o : Normal/Framework.hs
-build/release/Normal/Framework.o : build/release/Random/Framework.hi
-build/release/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
-build/release/MonteCarlo/Framework.o : build/release/MonteCarlo/DataStructures.hi
-build/release/MonteCarlo/Framework.o : build/release/Random/Framework.hi
-build/release/MonteCarlo/Framework.o : build/release/Normal/Framework.hi
-build/release/MonteCarlo/European.o : MonteCarlo/European.hs
-build/release/MonteCarlo/European.o : build/release/Normal/Framework.hi
-build/release/MonteCarlo/European.o : build/release/MonteCarlo/Framework.hi
-build/release/MonteCarlo/Lookback.o : MonteCarlo/Lookback.hs
-build/release/MonteCarlo/Lookback.o : build/release/Normal/Framework.hi
-build/release/MonteCarlo/Lookback.o : build/release/MonteCarlo/DataStructures.hi
-build/release/MonteCarlo/Lookback.o : build/release/MonteCarlo/Framework.hi
-build/release/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
-build/release/MonteCarlo/Interface.o : build/release/MonteCarlo/Lookback.hi
-build/release/MonteCarlo/Interface.o : build/release/MonteCarlo/European.hi
-build/release/Normal/Acklam.o : Normal/Acklam.hs
-build/release/Normal/Acklam.o : build/release/Normal/Framework.hi
-build/release/Normal/Acklam.o : build/release/Random/Framework.hi
-build/release/Normal/BoxMuller.o : Normal/BoxMuller.hs
-build/release/Normal/BoxMuller.o : build/release/Normal/Framework.hi
-build/release/Normal/BoxMuller.o : build/release/Random/Framework.hi
-build/release/Normal/Interface.o : Normal/Interface.hs
-build/release/Normal/Interface.o : build/release/Normal/Acklam.hi
-build/release/Normal/Interface.o : build/release/Normal/BoxMuller.hi
-build/release/Maths/Prime.o : Maths/Prime.hs
-build/release/Random/Halton.o : Random/Halton.hs
-build/release/Random/Halton.o : build/release/Maths/Prime.hi
-build/release/Random/Halton.o : build/release/Random/Framework.hi
-build/release/Random/Interface.o : Random/Interface.hs
-build/release/Random/Interface.o : build/release/Random/Ranq1.hi
-build/release/Random/Interface.o : build/release/Random/Halton.hi
-build/release/FrameworkInterface.o : FrameworkInterface.hs
-build/release/FrameworkInterface.o : build/release/MonteCarlo/Framework.hi
-build/release/FrameworkInterface.o : build/release/Normal/Framework.hi
-build/release/FrameworkInterface.o : build/release/MonteCarlo/DataStructures.hi
-build/release/FrameworkInterface.o : build/release/MonteCarlo/Interface.hi
-build/release/FrameworkInterface.o : build/release/Normal/Interface.hi
-build/release/FrameworkInterface.o : build/release/Random/Interface.hi
-build/release/Main.o : OptionCalculator.hs
-build/release/Main.o : build/release/FrameworkInterface.hi
-build/release/Main.o : build/release/MonteCarlo/DataStructures.hi
-build/release/Main.o : build/release/MonteCarlo/Interface.hi
-build/release/Main.o : build/release/Normal/Interface.hi
-build/release/Main.o : build/release/Random/Interface.hi
+build/profile/Misc/Debug.o : Misc/Debug.hs
+build/profile/Random/Framework.o : Random/Framework.hs
+build/profile/Random/Ranq1.o : Random/Ranq1.hs
+build/profile/Random/Ranq1.o : build/profile/Random/Framework.hi
+build/profile/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
+build/profile/Normal/Framework.o : Normal/Framework.hs
+build/profile/Normal/Framework.o : build/profile/Random/Framework.hi
+build/profile/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
+build/profile/MonteCarlo/Framework.o : build/profile/MonteCarlo/DataStructures.hi
+build/profile/MonteCarlo/Framework.o : build/profile/Random/Framework.hi
+build/profile/MonteCarlo/Framework.o : build/profile/Normal/Framework.hi
+build/profile/MonteCarlo/European.o : MonteCarlo/European.hs
+build/profile/MonteCarlo/European.o : build/profile/Normal/Framework.hi
+build/profile/MonteCarlo/European.o : build/profile/MonteCarlo/Framework.hi
+build/profile/MonteCarlo/Lookback.o : MonteCarlo/Lookback.hs
+build/profile/MonteCarlo/Lookback.o : build/profile/Normal/Framework.hi
+build/profile/MonteCarlo/Lookback.o : build/profile/MonteCarlo/DataStructures.hi
+build/profile/MonteCarlo/Lookback.o : build/profile/MonteCarlo/Framework.hi
+build/profile/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
+build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/Lookback.hi
+build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/European.hi
+build/profile/Normal/Acklam.o : Normal/Acklam.hs
+build/profile/Normal/Acklam.o : build/profile/Normal/Framework.hi
+build/profile/Normal/Acklam.o : build/profile/Random/Framework.hi
+build/profile/Normal/BoxMuller.o : Normal/BoxMuller.hs
+build/profile/Normal/BoxMuller.o : build/profile/Normal/Framework.hi
+build/profile/Normal/BoxMuller.o : build/profile/Random/Framework.hi
+build/profile/Normal/Interface.o : Normal/Interface.hs
+build/profile/Normal/Interface.o : build/profile/Normal/Acklam.hi
+build/profile/Normal/Interface.o : build/profile/Normal/BoxMuller.hi
+build/profile/Maths/Prime.o : Maths/Prime.hs
+build/profile/Random/Halton.o : Random/Halton.hs
+build/profile/Random/Halton.o : build/profile/Maths/Prime.hi
+build/profile/Random/Halton.o : build/profile/Random/Framework.hi
+build/profile/Random/Interface.o : Random/Interface.hs
+build/profile/Random/Interface.o : build/profile/Random/Ranq1.hi
+build/profile/Random/Interface.o : build/profile/Random/Halton.hi
+build/profile/FrameworkInterface.o : FrameworkInterface.hs
+build/profile/FrameworkInterface.o : build/profile/MonteCarlo/Framework.hi
+build/profile/FrameworkInterface.o : build/profile/Normal/Framework.hi
+build/profile/FrameworkInterface.o : build/profile/MonteCarlo/DataStructures.hi
+build/profile/FrameworkInterface.o : build/profile/MonteCarlo/Interface.hi
+build/profile/FrameworkInterface.o : build/profile/Normal/Interface.hi
+build/profile/FrameworkInterface.o : build/profile/Random/Interface.hi
+build/profile/Main.o : OptionCalculator.hs
+build/profile/Main.o : build/profile/FrameworkInterface.hi
+build/profile/Main.o : build/profile/MonteCarlo/DataStructures.hi
+build/profile/Main.o : build/profile/MonteCarlo/Interface.hi
+build/profile/Main.o : build/profile/Normal/Interface.hi
+build/profile/Main.o : build/profile/Random/Interface.hi
 # DO NOT DELETE: End of Haskell dependencies
