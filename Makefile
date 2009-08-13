@@ -108,13 +108,21 @@ depend :
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
-build/profile/Misc/Debug.o : Misc/Debug.hs
 build/profile/Random/Framework.o : Random/Framework.hs
 build/profile/Random/Ranq1.o : Random/Ranq1.hs
 build/profile/Random/Ranq1.o : build/profile/Random/Framework.hi
-build/profile/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 build/profile/Normal/Framework.o : Normal/Framework.hs
 build/profile/Normal/Framework.o : build/profile/Random/Framework.hi
+build/profile/Normal/BoxMuller.o : Normal/BoxMuller.hs
+build/profile/Normal/BoxMuller.o : build/profile/Normal/Framework.hi
+build/profile/Normal/BoxMuller.o : build/profile/Random/Framework.hi
+build/profile/Normal/Acklam.o : Normal/Acklam.hs
+build/profile/Normal/Acklam.o : build/profile/Normal/Framework.hi
+build/profile/Normal/Acklam.o : build/profile/Random/Framework.hi
+build/profile/Normal/Interface.o : Normal/Interface.hs
+build/profile/Normal/Interface.o : build/profile/Normal/Acklam.hi
+build/profile/Normal/Interface.o : build/profile/Normal/BoxMuller.hi
+build/profile/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 build/profile/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
 build/profile/MonteCarlo/Framework.o : build/profile/MonteCarlo/DataStructures.hi
 build/profile/MonteCarlo/Framework.o : build/profile/Random/Framework.hi
@@ -129,15 +137,7 @@ build/profile/MonteCarlo/Lookback.o : build/profile/MonteCarlo/Framework.hi
 build/profile/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
 build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/Lookback.hi
 build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/European.hi
-build/profile/Normal/Acklam.o : Normal/Acklam.hs
-build/profile/Normal/Acklam.o : build/profile/Normal/Framework.hi
-build/profile/Normal/Acklam.o : build/profile/Random/Framework.hi
-build/profile/Normal/BoxMuller.o : Normal/BoxMuller.hs
-build/profile/Normal/BoxMuller.o : build/profile/Normal/Framework.hi
-build/profile/Normal/BoxMuller.o : build/profile/Random/Framework.hi
-build/profile/Normal/Interface.o : Normal/Interface.hs
-build/profile/Normal/Interface.o : build/profile/Normal/Acklam.hi
-build/profile/Normal/Interface.o : build/profile/Normal/BoxMuller.hi
+build/profile/Misc/Debug.o : Misc/Debug.hs
 build/profile/Maths/Prime.o : Maths/Prime.hs
 build/profile/Random/Halton.o : Random/Halton.hs
 build/profile/Random/Halton.o : build/profile/Maths/Prime.hi
