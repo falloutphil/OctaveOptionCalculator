@@ -48,7 +48,7 @@ $(PROG) : $(OBJS)
 	mkdir -p $(BINDIR)
 	$(HC) -o $(BINDIR)/$@ $(PACKAGES) $(HC_OPTS) $(OBJS)
 
-profile : $(PROG).jpg
+graph : $(PROG).jpg
 	mv -f $(PROG).prof $(PROG).prof.txt
 
 # .o files are in our separate
@@ -57,11 +57,18 @@ profile : $(PROG).jpg
 $(BUILDDIR)/%.o : %.hs
 	$(HC) -c $< $(HC_OPTS)
 
+
 # Special case as ghc dependency creator
 # renames our Main object file if we
 # use odir!
 $(BUILDDIR)/Main.o : $(PROG).hs
 	$(HC) -c $< $(HC_OPTS)
+
+# This is of use here because
+# to get from any .o->.hi we don't actually
+# have to do anything! That's what @: says. 
+%.hi : %.o
+	@:
 
 
 # Create postscript file from profile run
@@ -82,21 +89,7 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 
 
 
-# Standard suffix rules
 
-# Clear suffixes
-.SUFFIXES :
-# Define ours
-.SUFFIXES : .o .hi 
-
-# This is a bit of a cheat.  Suffixes
-# allow us to say any.o to any_other.hi
-# freeing us from specific forms used
-# above.  This is of use here because
-# to get from any .o->.hi we don't actually
-# have to do anything! That's what @: says. 
-.o.hi:
-	@:
 
 
 clean :
@@ -111,21 +104,13 @@ depend :
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
+build/profile/Misc/Debug.o : Misc/Debug.hs
 build/profile/Random/Framework.o : Random/Framework.hs
 build/profile/Random/Ranq1.o : Random/Ranq1.hs
 build/profile/Random/Ranq1.o : build/profile/Random/Framework.hi
+build/profile/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 build/profile/Normal/Framework.o : Normal/Framework.hs
 build/profile/Normal/Framework.o : build/profile/Random/Framework.hi
-build/profile/Normal/BoxMuller.o : Normal/BoxMuller.hs
-build/profile/Normal/BoxMuller.o : build/profile/Normal/Framework.hi
-build/profile/Normal/BoxMuller.o : build/profile/Random/Framework.hi
-build/profile/Normal/Acklam.o : Normal/Acklam.hs
-build/profile/Normal/Acklam.o : build/profile/Normal/Framework.hi
-build/profile/Normal/Acklam.o : build/profile/Random/Framework.hi
-build/profile/Normal/Interface.o : Normal/Interface.hs
-build/profile/Normal/Interface.o : build/profile/Normal/Acklam.hi
-build/profile/Normal/Interface.o : build/profile/Normal/BoxMuller.hi
-build/profile/MonteCarlo/DataStructures.o : MonteCarlo/DataStructures.hs
 build/profile/MonteCarlo/Framework.o : MonteCarlo/Framework.hs
 build/profile/MonteCarlo/Framework.o : build/profile/MonteCarlo/DataStructures.hi
 build/profile/MonteCarlo/Framework.o : build/profile/Random/Framework.hi
@@ -140,7 +125,15 @@ build/profile/MonteCarlo/Lookback.o : build/profile/MonteCarlo/Framework.hi
 build/profile/MonteCarlo/Interface.o : MonteCarlo/Interface.hs
 build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/Lookback.hi
 build/profile/MonteCarlo/Interface.o : build/profile/MonteCarlo/European.hi
-build/profile/Misc/Debug.o : Misc/Debug.hs
+build/profile/Normal/Acklam.o : Normal/Acklam.hs
+build/profile/Normal/Acklam.o : build/profile/Normal/Framework.hi
+build/profile/Normal/Acklam.o : build/profile/Random/Framework.hi
+build/profile/Normal/BoxMuller.o : Normal/BoxMuller.hs
+build/profile/Normal/BoxMuller.o : build/profile/Normal/Framework.hi
+build/profile/Normal/BoxMuller.o : build/profile/Random/Framework.hi
+build/profile/Normal/Interface.o : Normal/Interface.hs
+build/profile/Normal/Interface.o : build/profile/Normal/Acklam.hi
+build/profile/Normal/Interface.o : build/profile/Normal/BoxMuller.hi
 build/profile/Maths/Prime.o : Maths/Prime.hs
 build/profile/Random/Halton.o : Random/Halton.hs
 build/profile/Random/Halton.o : build/profile/Maths/Prime.hi
