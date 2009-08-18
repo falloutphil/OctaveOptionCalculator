@@ -48,6 +48,9 @@ $(PROG) : $(OBJS)
 	mkdir -p $(BINDIR)
 	$(HC) -o $(BINDIR)/$@ $(PACKAGES) $(HC_OPTS) $(OBJS)
 
+profile : $(PROG).jpg
+	mv -f $(PROG).prof $(PROG).prof.txt
+
 # .o files are in our separate
 # directory.  This maps them
 # to their corresponding .hs file.
