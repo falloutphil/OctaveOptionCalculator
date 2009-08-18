@@ -122,6 +122,7 @@
 # Ignore profile output
 \.prof$
 \.prof.txt$
+\.sstderr.txt$
 \.aux$
 ^OptionCalculator.pdf$
 ^OptionCalculator.ps$

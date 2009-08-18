@@ -1,32 +1,16 @@
-HC         = ghc
-BUILDDIR   = build/$(build)
-BINDIR     = bin/$(build)
 
-HC_OPTS    = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
+# default is profile build
+build    = profile
+BUILDDIR = build/$(build)
+BINDIR   = bin/$(build)
+
+HC              = ghc
+HC_OPTS         = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
 HC_OPTS_RELEASE = -O2
 HC_OPTS_DEBUG   =
 HC_OPTS_PROFILE =  -prof -auto-all -caf-all -O2
+PACKAGES        = -package mtl
 
-HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
-
-PACKAGES  = -package mtl
-
-findSrcs  = $(shell find . -name '_darcs' -prune -o -name $(1) -print)
-findClean = if [ -d $(1) ]; then find $(1) -name '_darcs' -prune -o -name $(2) -exec rm -f {} \; ; fi
-
-
-PROG = OptionCalculator
-SRCS := $(call findSrcs,"*.hs")
-_OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
-# Nasty fudge, ghc renames our
-# object file with our Main in
-# it.  Providing you stick to
-# using the name of the final
-# binary this will work.
-OBJS = $(_OBJS:$(PROG).o=Main.o)
-
-# default
-build = release
 # key on build= argument
 ifeq "$(build)" "profile"
 HC_OPTS += $(HC_OPTS_PROFILE)
@@ -40,16 +24,71 @@ endif
 endif
 endif
 
+
+HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
+
+# Unix regulars
+MV   = mv -f
+AWK  = awk
+SORT = sort
+PR   = pr
+FIND = find
+
+findSrcs  = $(shell $(FIND) . -name '_darcs' -prune -o -name $(1) -print)
+findClean = if [ -d $(1) ]; then $(FIND) $(1) -name '_darcs' -prune -o -name $(2) -exec $(RM) {} \; ; fi
+
+
+PROG = OptionCalculator
+SRCS := $(call findSrcs,"*.hs")
+_OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
+# Nasty fudge, ghc renames our
+# object file with our Main in
+# it.  Providing you stick to
+# using the name of the final
+# binary this will work.
+OBJS = $(_OBJS:$(PROG).o=Main.o)
+
+
+# None file targets
+.PHONY : clean_build clean_results clean_emacs clean_make clean all graph depend help
+
 all : $(PROG) 
+
+graph : $(PROG).jpg
+	$(MV) $(PROG).prof $(PROG).prof.txt
+	$(RM) $(PROG).aux
+
+clean_build :
+	$(call findClean,./$(BUILDDIR),"*.hi")
+	$(call findClean,./$(BUILDDIR),"*.o")  
+	$(RM) $(BINDIR)/$(PROG)  
+
+clean_results : 
+	$(RM) $(PROG).jpg $(PROG).prof $(PROG).prof.txt $(PROG).sstderr.txt $(PROG).hp $(PROG).aux
+
+clean_emacs :
+	$(call findClean,./,"*~") 
+
+clean_make :
+	$(RM) Makefile.bak
+
+clean : clean_build clean_results clean_emacs clean_make
+
+depend : 
+	$(HC) -M $(HC_OPTS) $(SRCS)
+
+help :
+	$(MAKE) -p --question |                                                    \
+	$(AWK) '/^[^.%][-A-Za-z0-9_]*:/ { print substr($$1, 1, length($$1)-1) }' | \
+	$(SORT) | $(PR) -w80 -4 -l20
 
 
 $(PROG) : $(OBJS)
-	rm -f $(BINDIR)/$@
+
+	$(RM) $(BINDIR)/$@
 	mkdir -p $(BINDIR)
 	$(HC) -o $(BINDIR)/$@ $(PACKAGES) $(HC_OPTS) $(OBJS)
 
-graph : $(PROG).jpg
-	mv -f $(PROG).prof $(PROG).prof.txt
 
 # .o files are in our separate
 # directory.  This maps them
@@ -70,11 +109,9 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 %.hi : %.o
 	@:
 
-
 # Create postscript file from profile run
 %.hp : %
-	$(BINDIR)/$< +RTS -hc -p -K100M
-
+	$(BINDIR)/$< +RTS -hc -p -K100M -sstderr > $<.sstderr.txt 2>&1
 
 %.ps : %.hp
 	hp2ps -c $< $(HP2PS_OPTS)
@@ -85,17 +122,6 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 
 %.jpg : %.pdf
 	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
-
-
-clean :
-	$(call findClean,./$(BUILDDIR),"*.hi")
-	$(call findClean,./$(BUILDDIR),"*.o") 
-	$(call findClean,./,"*~")  
-	rm -f $(BINDIR)/$(PROG) $(PROG).aux $(PROG).hp Makefile.bak
-
-
-depend : 
-	$(HC) -M $(HC_OPTS) $(SRCS)
 
 
 # DO NOT DELETE: Beginning of Haskell dependencies
