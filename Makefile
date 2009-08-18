@@ -87,11 +87,6 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
 
 
-
-
-
-
-
 clean :
 	$(call findClean,./$(BUILDDIR),"*.hi")
 	$(call findClean,./$(BUILDDIR),"*.o") 
