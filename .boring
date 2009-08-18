@@ -121,6 +121,7 @@
 (^|/)bin($|/)
 # Ignore profile output
 \.prof$
+\.prof.txt$
 \.aux$
 ^OptionCalculator.pdf$
 ^OptionCalculator.ps$
