@@ -117,7 +117,7 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 # Should do better here!
 $(DEPEND) :
 	$(MKDIR) $(@D) 
-	$(HC) -M -dep-makefile $@ $(HC_OPTS) $(SRCS)
+	$(HC) -M -dep-makefile $@ $(HC_OPTS) $(PROG).hs
 
 
 # Create postscript file from profile run
