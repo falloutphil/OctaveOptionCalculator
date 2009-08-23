@@ -114,7 +114,9 @@ clean_results :
 	$(RM) $(PROG).jpg $(PROG).prof $(PROG).prof.txt $(PROG).sstderr.txt $(PROG).hp $(PROG).aux
 
 clean_emacs :
-	$(call findClean,./,"*~") 
+	$(call findClean,./,"*~")
+	$(call findClean,./,"#*#")
+	$(RM) $(TAGFILE)
 
 clean_depend :
 	$(RM) $(DEPEND)
