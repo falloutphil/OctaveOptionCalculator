@@ -69,6 +69,9 @@ endif
 
 
 HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
+HASKTAGS = hasktags -e
+ETAGS = etags 
+TAGFILE = TAGS
 
 # Unix regulars
 MV    = mv -f
@@ -94,7 +97,7 @@ OBJS = $(_OBJS:$(PROG).o=Main.o)
 DEPEND = $(BUILDDIR)/depend
 
 # None file targets
-.PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help
+.PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help emacs
 
 all : $(PROG) 
 
@@ -123,9 +126,15 @@ help :
 	$(AWK) '/^[^.%][-A-Za-z0-9_]*:/ { print substr($$1, 1, length($$1)-1) }' | \
 	$(SORT) | $(PR) -w80 -4 -l20
 
+# Load up the project and the haskell tags
+emacs : $(TAGFILE)
+	emacs -f visit-tags-table Makefile $(SRCS) &
+
+$(TAGFILE) : Makefile $(SRCS)
+	$(HASKTAGS) $(SRCS)
+	$(ETAGS) -a Makefile
 
 $(PROG) : $(OBJS)
-
 	$(RM) $(BINDIR)/$@
 	$(MKDIR) $(BINDIR)
 	$(HC) -o $(BINDIR)/$@ $(PACKAGES) $(HC_OPTS) $(OBJS)
@@ -176,6 +185,4 @@ $(DEPEND) :
 
 %.jpg : %.pdf
 	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
-
-
 
