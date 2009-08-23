@@ -6,7 +6,7 @@ module Random.Framework
 
 import Control.Monad.State.Strict
 
--- Classtype insists we produce a functional
+-- typeclass insists we produce a functional
 -- that returns a State monad which returns
 -- a list of doubles (n-dimensional random vector)
 class RngClass a where

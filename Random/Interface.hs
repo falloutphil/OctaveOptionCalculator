@@ -20,7 +20,7 @@ data RngType = RngTypeHalton Random.Halton.Halton |
 
 
 -- Create a StateType containing the underlying
--- inital state of our RNG depedning on user input.
+-- initial state of our RNG depending on user input.
 -- We have to know our Halton dimensionality at initialization
 -- because our state is effectively 2D (Base,Sim)
 rngChooser :: String -> Int -> RngType

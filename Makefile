@@ -42,6 +42,49 @@ findClean = if [ -d $(1) ]; then $(FIND) $(1) -name '_darcs' -prune -o -name $(2
 PROG = OptionCalculator
 SRCS := $(call findSrcs,"*.hs")
 _OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
+# Nasty fudge, ghdefault is profile build
+build    = profile
+BUILDDIR = build/$(build)
+BINDIR   = bin/$(build)
+
+HC              = ghc
+HC_OPTS         = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
+HC_OPTS_RELEASE = -O2
+HC_OPTS_DEBUG   =
+HC_OPTS_PROFILE =  -prof -auto-all -caf-all -O2
+PACKAGES        = -package mtl
+
+# key on build= argument
+ifeq "$(build)" "profile"
+HC_OPTS += $(HC_OPTS_PROFILE)
+else
+ifeq "$(build)" "debug"
+HC_OPTS += $(HC_OPTS_DEBUG)
+else
+ifeq "$(build)" "release"
+HC_OPTS += $(HC_OPTS_RELEASE)
+endif
+endif
+endif
+
+
+HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
+
+# Unix regulars
+MV    = mv -f
+AWK   = awk
+SORT  = sort
+PR    = pr
+FIND  = find
+MKDIR = mkdir -p
+
+findSrcs  = $(shell $(FIND) . -name '_darcs' -prune -o -name $(1) -print)
+findClean = if [ -d $(1) ]; then $(FIND) $(1) -name '_darcs' -prune -o -name $(2) -exec $(RM) {} \; ; fi
+
+
+PROG = OptionCalculator
+SRCS := $(call findSrcs,"*.hs")
+_OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
 # Nasty fudge, ghc renames our
 # object file with our Main in
 # it.  Providing you stick to
@@ -113,7 +156,7 @@ $(BUILDDIR)/Main.o : $(PROG).hs
 # If they don't exist create them!
 # Note - this is automatic the first
 # time but needs cleaning for any
-# subsequent depedency change
+# subsequent dependency change
 # Should do better here!
 $(DEPEND) :
 	$(MKDIR) $(@D) 

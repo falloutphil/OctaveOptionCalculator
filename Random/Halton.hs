@@ -11,12 +11,12 @@ import Control.Monad.State.Strict
 import Random.Framework
 import Maths.Prime
 
--- The underlying state of a halton sequence
+-- The underlying state of a Halton sequence
 -- is just an int, but if we want to have
 -- many instances of RngClass each with
 -- an underlying state of Int, then
 -- we must differentiate.  We need a
--- a *new* type exclusive of, but synonmous
+-- a *new* type exclusive of, but synonymous
 -- with an int.  We reduce this to an Int
 -- once we've drilled through the polymorphism.
 -- deriving(Show) needed to use with trace function.

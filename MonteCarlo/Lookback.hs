@@ -17,7 +17,7 @@ newtype Lookback = Lookback (Double,Double)
 
 instance McClass Lookback where
    nextTimeStep userData =
-      -- NOTE: Strict on the constituants of the tuple to prevent thunks 
+      -- NOTE: Strict on the constituents of the tuple to prevent thunks 
       StateT $ \(Lookback (!maxVal,!s)) -> do norm <- nextNormal
                                               let newState = Lookback $ evolveLookback userData s norm maxVal
                                               return ( () , newState )

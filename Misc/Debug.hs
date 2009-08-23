@@ -5,7 +5,7 @@ module Misc.Debug
 
 import Debug.Trace
 
--- Trace internal varaibles just like function
+-- Trace internal variables just like function
 -- parameters.  May maintain your sanity.
 tracePassThrough :: Show a => a -> String -> a
 tracePassThrough value string
