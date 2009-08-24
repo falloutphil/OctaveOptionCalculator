@@ -1,7 +1,6 @@
 
-# default is profile build
 
-# Default build type
+# Default build type (profile if not specified on command line)
 build    := profile
 BUILDDIR := build/$(build)
 BINDIR   := bin/$(build)
