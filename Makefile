@@ -1,58 +1,26 @@
 
 # default is profile build
-build    = profile
-BUILDDIR = build/$(build)
-BINDIR   = bin/$(build)
 
-HC              = ghc
-HC_OPTS         = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
-HC_OPTS_RELEASE = -O2
-HC_OPTS_DEBUG   =
-HC_OPTS_PROFILE =  -prof -auto-all -caf-all -O2
-PACKAGES        = -package mtl
+# Default build type
+build    := profile
+BUILDDIR := build/$(build)
+BINDIR   := bin/$(build)
 
-# key on build= argument
-ifeq "$(build)" "profile"
-HC_OPTS += $(HC_OPTS_PROFILE)
-else
-ifeq "$(build)" "debug"
-HC_OPTS += $(HC_OPTS_DEBUG)
-else
-ifeq "$(build)" "release"
-HC_OPTS += $(HC_OPTS_RELEASE)
-endif
-endif
-endif
+# Compiler, etc defaults
+HC              := ghc
+HC_OPTS         := -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
+HC_OPTS_RELEASE := -O2
+HC_OPTS_DEBUG   :=
+HC_OPTS_PROFILE := -prof -auto-all -caf-all -O2
+PACKAGES        := -package mtl
 
+# Options for heap graph
+HP2PS_OPTS := -e8in $(EXTRA_HP2PS_OPTS)
 
-HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
-
-# Unix regulars
-MV    = mv -f
-AWK   = awk
-SORT  = sort
-PR    = pr
-FIND  = find
-MKDIR = mkdir -p
-
-findSrcs  = $(shell $(FIND) . -name '_darcs' -prune -o -name $(1) -print)
-findClean = if [ -d $(1) ]; then $(FIND) $(1) -name '_darcs' -prune -o -name $(2) -exec $(RM) {} \; ; fi
-
-
-PROG = OptionCalculator
-SRCS := $(call findSrcs,"*.hs")
-_OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
-# Nasty fudge, ghdefault is profile build
-build    = profile
-BUILDDIR = build/$(build)
-BINDIR   = bin/$(build)
-
-HC              = ghc
-HC_OPTS         = -Wall -i$(BUILDDIR) -odir $(BUILDDIR) -hidir $(BUILDDIR) $(EXTRA_HC_OPTS)
-HC_OPTS_RELEASE = -O2
-HC_OPTS_DEBUG   =
-HC_OPTS_PROFILE =  -prof -auto-all -caf-all -O2
-PACKAGES        = -package mtl
+# Emacs source definitions
+HASKTAGS   := hasktags -e
+ETAGS      := etags 
+TAGFILE    := TAGS
 
 # key on build= argument
 ifeq "$(build)" "profile"
@@ -67,36 +35,33 @@ endif
 endif
 endif
 
-
-HP2PS_OPTS = -e8in $(EXTRA_HP2PS_OPTS)
-HASKTAGS = hasktags -e
-ETAGS = etags 
-TAGFILE = TAGS
-
 # Unix regulars
-MV    = mv -f
-AWK   = awk
-SORT  = sort
-PR    = pr
-FIND  = find
-MKDIR = mkdir -p
+MV    := mv -f
+AWK   := awk
+SORT  := sort
+PR    := pr
+FIND  := find
+MKDIR := mkdir -p
+RM    := rm -rf
 
+# Functions
 findSrcs  = $(shell $(FIND) . -name '_darcs' -prune -o -name $(1) -print)
 findClean = if [ -d $(1) ]; then $(FIND) $(1) -name '_darcs' -prune -o -name $(2) -exec $(RM) {} \; ; fi
 
-
-PROG = OptionCalculator
+# Sources and Program name
+PROG := OptionCalculator
 SRCS := $(call findSrcs,"*.hs")
-_OBJS = $(SRCS:.%.hs=$(BUILDDIR)%.o)
+_OBJS := $(SRCS:.%.hs=$(BUILDDIR)%.o)
 # Nasty fudge, ghc renames our
 # object file with our Main in
 # it.  Providing you stick to
 # using the name of the final
 # binary this will work.
-OBJS = $(_OBJS:$(PROG).o=Main.o)
-DEPEND = $(BUILDDIR)/depend
+OBJS := $(_OBJS:$(PROG).o=Main.o)
+# File for dependancies
+DEPEND := $(BUILDDIR)/depend
 
-# None file targets
+# None-file targets
 .PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help emacs
 
 all : $(PROG) 
@@ -128,14 +93,16 @@ help :
 	$(AWK) '/^[^.%][-A-Za-z0-9_]*:/ { print substr($$1, 1, length($$1)-1) }' | \
 	$(SORT) | $(PR) -w80 -4 -l20
 
-# Load up the project and the haskell tags
+# Load up the project and the function definitions
 emacs : $(TAGFILE)
 	emacs -f visit-tags-table Makefile $(SRCS) &
 
+# Create function definitions
 $(TAGFILE) : Makefile $(SRCS)
 	$(HASKTAGS) $(SRCS)
 	$(ETAGS) -a Makefile
 
+# Build the actual program!
 $(PROG) : $(OBJS)
 	$(RM) $(BINDIR)/$@
 	$(MKDIR) $(BINDIR)
@@ -185,6 +152,7 @@ $(DEPEND) :
 %.pdf : %.ps
 	ps2pdf $<
 
+# JPEG output for website
 %.jpg : %.pdf
 	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
 
