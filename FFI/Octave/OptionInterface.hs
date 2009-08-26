@@ -1,6 +1,6 @@
  {-# LANGUAGE ForeignFunctionInterface#-}
 
-module OptionInterface 
+module FFI.Octave.OptionInterface 
     where
 
 import Foreign.C.Types
