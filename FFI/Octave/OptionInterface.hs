@@ -14,16 +14,18 @@ import MonteCarlo.Interface
 import FrameworkInterface
 
 priceOption :: CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CDouble --CString -> CString -> CString -> CDouble
-priceOption strk vol expy ir ts sims = -- rng norm instr =
+priceOption strk vol expy ir ts sims = -- rng norm instr = 
+
     let userData  = MonteCarloUserData { strike       = realToFrac strk,
                                          putCall      = Call,
                                          volatility   = realToFrac vol, 
                                          expiry       = realToFrac expy,
                                          interestRate = realToFrac ir,
-                                         timeSteps    = fromIntegral ts }
+                                         timeSteps    = fromIntegral ts }	
+
         numOfSims  = fromIntegral sims
         underlying = 100
-        haskNorm   = "Box Muller" --unsafePerformIO $ peekCString norm
+        haskNorm   = "Acklam" --unsafePerformIO $ peekCString norm
         normalType = normalChooser haskNorm
         tsteps = let ts' = timeSteps userData
                     in if even ts' then ts' else ts' + 1
@@ -38,3 +40,9 @@ priceOption strk vol expy ir ts sims = -- rng norm instr =
        in realToFrac discountedPayOff
 
 foreign export ccall priceOption :: CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CDouble --CString -> CString -> CString -> CDouble
+
+
+
+
+
+
