@@ -127,3 +127,7 @@
 ^OptionCalculator.pdf$
 ^OptionCalculator.ps$
 ^OptionCalculator.jpg$
+# Ignore FFI stub files
+\_stub.[ch]$
+# Ignore Octave compiled functions
+\.oct$

@@ -23,7 +23,7 @@ DEFUN_DLD(price_option, args, , "Option Pricer")
             << "\nir   " << ir
             << "\nts   " << ts
             << "\nsims " << sims;
-
+  
   double answer = pricerInterface( strk,
 				   vol,
 			           expy,
