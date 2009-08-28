@@ -25,12 +25,12 @@ priceOption strk vol expy ir ts sims = -- rng norm instr =
 
         numOfSims  = fromIntegral sims
         underlying = 100
-        haskNorm   = "Acklam" --unsafePerformIO $ peekCString norm
+        haskNorm   = "Box Muller" --unsafePerformIO $ peekCString norm
         normalType = normalChooser haskNorm
         tsteps = let ts' = timeSteps userData
                     in if even ts' then ts' else ts' + 1
 
-        haskRng          = "Ranq1" --unsafePerformIO $ peekCString rng
+        haskRng          = "Halton" --unsafePerformIO $ peekCString rng
         rngType          = rngChooser haskRng tsteps
         haskInstr        = "European" --unsafePerformIO $ peekCString instr
         contractType     = contractChooser haskInstr underlying
