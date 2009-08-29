@@ -26,9 +26,13 @@ double pricerInterface( double strk,
 		      double expy,
 		      double ir,
 		      int    ts,
-		      int    sims )
+		      int    sims,
+                      char*  rngStr,
+                      char*  normalStr,
+		      char*  instrStr )
 {
-  return priceOption( strk, vol, expy, ir, ts, sims);
+  return priceOption( strk, vol, expy, ir, ts, sims, 
+                      rngStr, normalStr, instrStr );
 }
 
 

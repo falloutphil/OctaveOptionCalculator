@@ -13,7 +13,10 @@ double pricerInterface( double strk,
 			double expy,
 			double ir,
 			int    ts,
-			int    sims );
+			int    sims,
+                        char*  rngStr,
+                        char*  normalStr,
+			char*  instrStr );
 
 #ifdef __cplusplus
 }
