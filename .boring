@@ -115,10 +115,12 @@
 
 # ------ Added by me ------
 
-# Ignore build directories
+# Ignore built objects
 (^|/)build($|/)
 # Ignore built binaries
 (^|/)bin($|/)
+# Ignore built libaries
+(^|/)lib($|/)
 # Ignore profile output
 \.prof$
 \.prof.txt$

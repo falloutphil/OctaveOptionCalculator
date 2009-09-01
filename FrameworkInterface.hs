@@ -5,8 +5,6 @@ module FrameworkInterface
      getResultFn
     ) where
 
-import Debug.Trace
-
 import Random.Interface
 import Normal.Interface
 import MonteCarlo.Interface
@@ -20,7 +18,6 @@ import MonteCarlo.Framework
 -- and produces a result.
 getResultFn :: Int -> RngType -> NormalType -> ContractType 
                -> ( MonteCarloUserData -> Double )
-getResultFn w x y z | trace ("getResultFn") False = undefined
 getResultFn numOfSims rng norm (ContractTypeEuropean euro)  = 
    getNormalAndRngFn numOfSims rng norm $ euro
 getResultFn numOfSims rng norm (ContractTypeLookback lb)    = 
@@ -30,7 +27,6 @@ getResultFn numOfSims rng norm (ContractTypeLookback lb)    =
 getNormalAndRngFn :: McClass a =>
                      Int -> RngType -> NormalType -> 
                      ( a -> MonteCarloUserData -> Double)
-getNormalAndRngFn x y z | trace ("getNormalAndRngFn") False = undefined
 getNormalAndRngFn numOfSims rng (NormalTypeBoxMuller bm) = 
    getRngFn numOfSims rng $ bm  
 getNormalAndRngFn numOfSims rng (NormalTypeAcklam ack)   = 
@@ -46,7 +42,6 @@ getNormalAndRngFn numOfSims rng (NormalTypeAcklam ack)   =
 -- in one function we would have a case for each NormalType.
 getRngFn :: NormalClass a => McClass b => Show a =>
             Int -> RngType -> ( a -> b -> MonteCarloUserData -> Double)
-getRngFn x y | trace ("getRngFn") False = undefined
 getRngFn numOfSims (RngTypeHalton halton) = simResult numOfSims 0 halton 
 getRngFn numOfSims (RngTypeRanq1  ranq1)  = simResult numOfSims 0 ranq1  
 

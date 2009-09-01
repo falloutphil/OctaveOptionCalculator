@@ -7,7 +7,6 @@ import MonteCarlo.DataStructures
 
 import FrameworkInterface
 
-import FFI.Octave.OptionInterface
 
 main :: IO()
 main = do
