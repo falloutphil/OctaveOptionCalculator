@@ -82,10 +82,14 @@ DEPEND := $(BUILDDIR)/depend.mk
 
 # Complete list of sources 
 # only used for tags and emacs
+# Haskell
 HSRCS  := $(call findSrcs,".", "*.hs")
+# C/C++
 CSRCS  := $(call findSrcs,".", "*.h")
 CSRCS  += $(call findSrcs,".", "*.c")
 CSRCS  += $(call findSrcs,".", "*.cpp")
+# Octave/Matlab
+MSRCS  := $(call findSrcs,".", "*.m")
 
 # None-file targets
 .PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help emacs octave
@@ -123,16 +127,23 @@ help :
 
 # Load up the project and the function definitions
 emacs : $(TAGFILE)
-	emacs -f visit-tags-table Makefile $(HSRCS) $(CSRCS) &
+	emacs -f visit-tags-table Makefile $(HSRCS) $(CSRCS) $(MSRCS) &
 
 # Octave binaries
 octave : hs_init.oct hs_exit.oct price_option.oct
 
 # Create function definitions
+# Octave example from
+# http://www.gnu.org/software/emacs/manual/html_node/emacs/Etags-Regexps.html
 $(TAGFILE) : Makefile $(HSRCS)
 	$(HASKTAGS) $(HSRCS)
 	$(ETAGS) -a Makefile
 	$(ETAGS) -a $(CSRCS)
+	$(ETAGS) -a --language=none \
+                    --regex='/[ \t]*function.*=[ \t]*\([^ \t]*\)[ \t]*(/\1/' \
+                    --regex='/###key \(.*\)/\1/' \
+                    --regex='/[ \t]*global[ \t].*/' \
+                    $(MSRCS)
 
 # Build the actual program!
 $(PROG) : $(EXE_HS_OBJS)
