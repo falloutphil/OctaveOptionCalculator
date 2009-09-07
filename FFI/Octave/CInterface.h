@@ -8,15 +8,16 @@ extern "C" {
 void init_CInterface(void);
 void exit_CInterface(void);
 
-double pricerInterface( double strk,
-			double vol,
-			double expy,
-			double ir,
-			int    ts,
-			int    sims,
-                        char*  rngStr,
-                        char*  normalStr,
-			char*  instrStr );
+  double pricerInterface( double underl,
+		          double strk,
+			  double vol,
+			  double expy,
+			  double ir,
+			  int    ts,
+			  int    sims,
+			  char*  rngStr,
+			  char*  normalStr,
+			  char*  instrStr );
 
 #ifdef __cplusplus
 }
