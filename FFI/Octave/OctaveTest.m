@@ -12,12 +12,11 @@ sims  = 1000;
 [X,Y] = meshgrid(T,S0);
 f = @(time,price) \
     price_option(price,K,sigma,time,r,ts,sims,'Halton','Box Muller','European');
-surf(X,Y,f(X,Y))
-title('Option Surface - Time to Expiry vs Initial Price vs Value')
-xlabel('Time to Expiry')
-ylabel('Initial Stock Price')
-zlabel('Value')
-% Need to pause whilst graph is shown or it will segv
-pause()
+surf(X,Y,f(X,Y));
+title('Option Surface - Struck at 50');
+xlabel('Time to Expiry');
+ylabel('Initial Stock Price');
+zlabel('   Value');
+print('OctaveTest.png', '-S720,480')
 
 hs_exit()

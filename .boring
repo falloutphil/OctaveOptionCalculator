@@ -129,7 +129,7 @@
 \.hp$
 ^OptionCalculator.pdf$
 ^OptionCalculator.ps$
-^OptionCalculator.jpg$
+\.png$
 # Ignore FFI stub files
 \_stub.[ch]$
 # Ignore Octave compiled functions

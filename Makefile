@@ -5,6 +5,8 @@ build    := profile
 BUILDDIR := build/$(build)
 BINDIR   := bin/$(build)
 LIBDIR   := lib/$(build)
+# Needed for Octave execution environment 
+LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(LIBDIR)
 
 # Compiler, etc defaults
 HC              := ghc
@@ -92,11 +94,11 @@ CSRCS  += $(call findSrcs,".", "*.cpp")
 MSRCS  := $(call findSrcs,".", "*.m")
 
 # None-file targets
-.PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help emacs octave
+.PHONY : clean_build clean_results clean_emacs clean_depend clean all graph help emacs octave octave_test
 
 all : $(PROG) octave
 
-graph : $(PROG).jpg
+graph : $(PROG).png
 	$(MV) $(PROG).prof $(PROG).prof.txt
 	$(RM) $(PROG).aux
 
@@ -108,12 +110,11 @@ clean_build : clean_depend
 	$(RM) $(LIBDIR)/*  
 
 clean_results : 
-	$(RM) $(PROG).jpg $(PROG).prof $(PROG).prof.txt $(PROG).sstderr.txt $(PROG).hp $(PROG).aux
+	$(RM) $(PROG).png $(PROG).prof $(PROG).prof.txt $(PROG).sstderr.txt $(PROG).hp $(PROG).aux
 
 clean_emacs :
 	$(call findClean,./,"*~")
 	$(call findClean,./,"#*#")
-	$(RM) $(TAGFILE)
 
 clean_depend :
 	$(RM) $(DEPEND)
@@ -131,6 +132,11 @@ emacs : $(TAGFILE)
 
 # Octave binaries
 octave : hs_init.oct hs_exit.oct price_option.oct
+
+# Octave tests
+octave_tests : octave
+	$(foreach file,$(MSRCS),octave -q -p $(LIBDIR) $(file))
+
 
 # Create function definitions
 # Octave example from
@@ -160,7 +166,7 @@ $(FFI_LIB) : FFI/Octave/CInterface.c $(BUILDDIR)/FFI/Octave/OptionInterface_stub
 # Create Octave binary
 %.oct : FFI/Octave/%.cpp $(FFI_LIB)
 	$(MKDIR) $(BINDIR)
-	$(OC) $(OC_OPTS) $< -o $(BINDIR)/$@
+	$(OC) $(OC_OPTS) $< -o $(LIBDIR)/$@
 
 # .o files are in our separate
 # directory.  This maps them
@@ -209,7 +215,7 @@ $(DEPEND) :
 %.pdf : %.ps
 	ps2pdf $<
 
-# JPEG output for website
-%.jpg : %.pdf
-	gs -sDEVICE=jpeg -sOutputFile=$@ - < $<
+# PNG output for website (better than JPEG for graphs!)
+%.png : %.pdf
+	gs -sDEVICE=png48 -sOutputFile=$@ - < $<
 
