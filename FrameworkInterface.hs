@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 
 module FrameworkInterface
     (
@@ -42,8 +41,8 @@ getNormalAndRngFn numOfSims rng (NormalTypeAcklam ack)   =
 -- in one function we would have a case for each NormalType.
 getRngFn :: NormalClass a => McClass b => Show a =>
             Int -> RngType -> ( a -> b -> MonteCarloUserData -> Double)
-getRngFn numOfSims (RngTypeHalton halton) = simResult numOfSims 0 halton 
-getRngFn numOfSims (RngTypeRanq1  ranq1)  = simResult numOfSims 0 ranq1  
+getRngFn numOfSims (RngTypeHalton halton) = simResult numOfSims halton 
+getRngFn numOfSims (RngTypeRanq1  ranq1)  = simResult numOfSims ranq1  
 
 
 

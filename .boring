@@ -126,6 +126,7 @@
 \.prof.txt$
 \.sstderr.txt$
 \.aux$
+\.hp$
 ^OptionCalculator.pdf$
 ^OptionCalculator.ps$
 ^OptionCalculator.jpg$

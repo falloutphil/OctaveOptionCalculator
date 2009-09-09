@@ -17,11 +17,11 @@ main = do
                                               volatility   = 0.2, --0.4, --0.2,  
                                               expiry       = 1, --5/12, --1, 
                                               interestRate = 0.05, --0.1, --0.05,
-                                              timeSteps    = 100 }                      
-              numOfSims = 10000
-              userRng = "Ranq1"
-              userNorm = "Acklam"
-              userContract = "Lookback"
+                                              timeSteps    = 1 }                      
+              numOfSims = 500000
+              userRng = "Halton"
+              userNorm = "Box Muller"
+              userContract = "European"
               underLying = 100
               normalType = normalChooser userNorm
               ts = let ts' = timeSteps userData

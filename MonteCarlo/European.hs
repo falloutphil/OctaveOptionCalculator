@@ -17,8 +17,8 @@ newtype European = European Double
 instance McClass European where
    nextTimeStep userData = 
       StateT $ \(European s) -> do norm <- nextNormal
-                                   let !newState = European $ evolveClosedForm userData s norm
-                                   return ( (), newState )
+                                   let !newState = evolveClosedForm userData s norm
+                                   return ( (), European newState )
    toValue (European value) = value
 
 
