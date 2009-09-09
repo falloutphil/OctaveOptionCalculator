@@ -16,7 +16,8 @@ surf(X,Y,f(X,Y));
 title('Option Surface - Struck at 50');
 xlabel('Time to Expiry');
 ylabel('Initial Stock Price');
-zlabel('   Value');
+% Must be able format better than this!
+zlabel('     Value');
 print('OctaveTest.png', '-S720,480')
 
 hs_exit()

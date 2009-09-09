@@ -7,6 +7,8 @@ BINDIR   := bin/$(build)
 LIBDIR   := lib/$(build)
 # Needed for Octave execution environment 
 LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(LIBDIR)
+# Needed to kill X11 for surf script on server
+GNUTERM := dumb
 
 # Compiler, etc defaults
 HC              := ghc
