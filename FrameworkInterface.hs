@@ -16,7 +16,7 @@ import MonteCarlo.Framework
 -- Returns a function takes the user data 
 -- and produces a result.
 getResultFn :: Int -> RngType -> NormalType -> ContractType 
-               -> ( MonteCarloUserData -> Double )
+               -> ( MonteCarloUserData -> [Double] )
 getResultFn numOfSims rng norm (ContractTypeEuropean euro)  = 
    getNormalAndRngFn numOfSims rng norm $ euro
 getResultFn numOfSims rng norm (ContractTypeLookback lb)    = 
@@ -25,7 +25,7 @@ getResultFn numOfSims rng norm (ContractTypeLookback lb)    =
 
 getNormalAndRngFn :: McClass a =>
                      Int -> RngType -> NormalType -> 
-                     ( a -> MonteCarloUserData -> Double)
+                     ( a -> MonteCarloUserData -> [Double])
 getNormalAndRngFn numOfSims rng (NormalTypeBoxMuller bm) = 
    getRngFn numOfSims rng $ bm  
 getNormalAndRngFn numOfSims rng (NormalTypeAcklam ack)   = 
@@ -40,7 +40,7 @@ getNormalAndRngFn numOfSims rng (NormalTypeAcklam ack)   =
 -- have to update the below function with 1 line.  If it was done
 -- in one function we would have a case for each NormalType.
 getRngFn :: NormalClass a => McClass b => Show a =>
-            Int -> RngType -> ( a -> b -> MonteCarloUserData -> Double)
+            Int -> RngType -> ( a -> b -> MonteCarloUserData -> [Double])
 getRngFn numOfSims (RngTypeHalton halton) = simResult numOfSims halton 
 getRngFn numOfSims (RngTypeRanq1  ranq1)  = simResult numOfSims ranq1  
 

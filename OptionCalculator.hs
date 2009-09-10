@@ -18,19 +18,19 @@ main = do
                                               expiry       = 1, --5/12, --1, 
                                               interestRate = 0.05, --0.1, --0.05,
                                               timeSteps    = 1 }                      
-              numOfSims = 500000
+              numOfSims = 5000
               userRng = "Halton"
               userNorm = "Box Muller"
               userContract = "European"
-              underLying = 100
+              underLying = [100,100]
               normalType = normalChooser userNorm
               ts = let ts' = timeSteps userData
                       in if even ts' then ts' else ts' + 1
               rngType          = rngChooser userRng ts
               contractType     = contractChooser userContract underLying
               sumOfPayOffs     = getResultFn numOfSims rngType normalType contractType $ userData
-              averagePayOff    = sumOfPayOffs / fromIntegral numOfSims
-              discountedPayOff = averagePayOff * exp (-1 * interestRate userData * expiry userData)
+              averagePayOff    = map ( * (1/(fromIntegral numOfSims))) sumOfPayOffs
+              discountedPayOff = map ( * exp (-1 * interestRate userData * expiry userData)) averagePayOff
           putStrLn "Result:"
           print discountedPayOff
 

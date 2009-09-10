@@ -12,19 +12,20 @@ import MonteCarlo.DataStructures
 import Normal.Framework
 
 
-newtype Lookback = Lookback (Double,Double)
+newtype Lookback = Lookback [(Double,Double)]
    deriving (Show)
 
 instance McClass Lookback where
    nextTimeStep userData =
       -- NOTE: Strict on the constituents of the tuple to prevent thunks 
-      StateT $ \(Lookback (!maxVal,!s)) -> do norm <- nextNormal
-                                              let newState = Lookback $ evolveLookback userData s norm maxVal
-                                              return ( () , newState )
-   toValue (Lookback (maxVal,_)) = maxVal
+      StateT $ \(Lookback maxStateTupleList) -> do norm <- nextNormal
+                                                   let newState = Lookback $ evolveLookback userData maxStateTupleList norm
+                                                   return ( () , newState )
+   toValue (Lookback maxStateTupleList) = map fst maxStateTupleList
 
 
-evolveLookback :: MonteCarloUserData -> (Double -> Double -> Double -> (Double,Double))
-evolveLookback userData currentValue normal currentMaxValue =
-   let newValue = evolveStandard userData currentValue normal
-      in (  max newValue currentMaxValue, newValue )
+evolveLookback :: MonteCarloUserData -> ([(Double,Double)] -> Double -> [(Double,Double)])
+evolveLookback userData maxStateTupleList normal =
+   let (maxList,valList) = unzip maxStateTupleList
+       newValue = evolveStandard userData valList normal
+      in zip (zipWith max newValue maxList) newValue 

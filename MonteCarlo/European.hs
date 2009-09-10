@@ -11,7 +11,7 @@ import MonteCarlo.Framework
 import Normal.Framework
 
 
-newtype European = European Double
+newtype European = European [Double]
    deriving (Show)
 
 instance McClass European where
