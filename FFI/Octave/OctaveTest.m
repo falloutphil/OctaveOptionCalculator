@@ -18,6 +18,7 @@ xlabel('Time to Expiry');
 ylabel('Initial Stock Price');
 % Must be able format better than this!
 zlabel('     Value');
+% See makefile about print usage
 print('OctaveTest.png', '-S720,480')
 
 hs_exit()
