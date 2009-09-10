@@ -7,9 +7,6 @@ BINDIR   := bin/$(build)
 LIBDIR   := lib/$(build)
 # Needed for Octave execution environment 
 LD_LIBRARY_PATH := $(LIBDIR):$(LD_LIBRARY_PATH)
-# Needed to pipe GnuPlot's output to terminal
-# when running on build server
-GNUTERM:=dumb
 
 # Compiler, etc defaults
 HC              := ghc
@@ -73,7 +70,7 @@ COMMON_HS_SRCS += $(call findSrcs, "Random", "*.hs")
 COMMON_HS_SRCS += FrameworkInterface.hs
 EXE_HS_SRCS    := $(COMMON_HS_SRCS) OptionCalculator.hs
 OCTAVE_HS_SRCS := $(COMMON_HS_SRCS) $(call findSrcs, "FFI/Octave", "*.hs") 
-_EXE_HS_OBJS   :=  $(EXE_HS_SRCS:%.hs=$(BUILDDIR)/%.o)
+_EXE_HS_OBJS   := $(EXE_HS_SRCS:%.hs=$(BUILDDIR)/%.o)
 # Nasty fudge, ghc renames our
 # object file with our Main in
 # it.  Providing you stick to
@@ -138,7 +135,7 @@ octave : hs_init.oct hs_exit.oct price_option.oct
 
 # Octave tests
 octave_tests : octave
-	$(foreach file,$(MSRCS),octave -q -p $(LIBDIR) $(file))
+	$(foreach file,$(MSRCS),export GNUTERM=dumb;octave -q -p $(LIBDIR) $(file))
 
 
 # Create function definitions
