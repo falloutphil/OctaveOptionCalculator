@@ -15,7 +15,7 @@ main = do
           let userData = MonteCarloUserData { strike       = 100, --52, --100, 
                                               putCall      = Call,
                                               volatility   = 0.2, --0.4, --0.2,  
-                                              expiry       = 1, --5/12, --1, 
+                                              expiry       = [1,1], --5/12, --1, 
                                               interestRate = 0.05, --0.1, --0.05,
                                               timeSteps    = 1 }                      
               numOfSims = 500000
@@ -29,8 +29,10 @@ main = do
               rngType          = rngChooser userRng ts
               contractType     = contractChooser userContract underLying
               sumOfPayOffs     = getResultFn numOfSims rngType normalType contractType $ userData
-              averagePayOff    = map ( * (1/(fromIntegral numOfSims))) sumOfPayOffs
-              discountedPayOff = map ( * exp (-1 * interestRate userData * expiry userData)) averagePayOff
+              averagePayOff    = map (*(1/(fromIntegral numOfSims))) sumOfPayOffs
+              discountListCf   = map (* (-1 * interestRate userData)) $ expiry userData
+              discountList     = map exp discountListCf
+              discountedPayOff = zipWith (*) discountList averagePayOff
           putStrLn "Result:"
           print discountedPayOff
 

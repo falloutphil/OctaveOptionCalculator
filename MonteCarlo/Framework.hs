@@ -71,20 +71,22 @@ evolveStandard :: MonteCarloUserData -> ([Double] -> Double -> [Double])
 --   | trace ( "   currentValue " ++ show currentValue ++ " normal " ++ show normal ) False=undefined 
 evolveStandard userData currentValue normal = 
    let vol        = volatility userData
-       delta_t    = expiry userData / fromIntegral (timeSteps userData)
-       stochastic = vol * normal * sqrt delta_t
-       drift      = (interestRate userData) * delta_t
-       multiplier = (* ( 1 + drift + stochastic)) 
-      in map multiplier currentValue 
+       delta_t    = map (* (1/ fromIntegral (timeSteps userData))) $ expiry userData
+       stochastic = map ((vol * normal *) . sqrt) delta_t
+       drift      = map (*(interestRate userData)) delta_t
+       dsSum      = zipWith (+) drift stochastic
+       multiplier = map (+1) dsSum
+      in zipWith (*) multiplier currentValue 
 
 evolveClosedForm :: MonteCarloUserData -> ([Double] -> Double -> [Double])
 --evolveClosedForm userData currentValue normal
 --   | trace ( "   currentValue " ++ show currentValue ++ " normal " ++ show normal ) False=undefined 
 evolveClosedForm userData currentValue normal = 
    let vol        = volatility userData
-       delta_t    = expiry userData / fromIntegral (timeSteps userData)
-       stochastic = vol * normal * sqrt delta_t
-       drift      = ( (interestRate userData) - (0.5*vol*vol) )*delta_t
-       multiplier = (*exp (drift+stochastic))
-      in map multiplier currentValue
+       delta_t    = map (* (1/ fromIntegral (timeSteps userData))) $ expiry userData
+       stochastic = map ((vol * normal *) . sqrt) delta_t
+       drift      = map (*( (interestRate userData) - (0.5*vol*vol) )) delta_t
+       sdSum      = zipWith (+) drift stochastic
+       multiplier = map exp sdSum
+      in zipWith (*) multiplier currentValue
 

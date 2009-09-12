@@ -13,6 +13,6 @@ data MonteCarloUserData = MonteCarloUserData
    { strike       :: Double,
      putCall      :: PutCall,
      volatility   :: Double,
-     expiry       :: Double,
+     expiry       :: [Double],
      interestRate :: Double,
      timeSteps    :: Int  }

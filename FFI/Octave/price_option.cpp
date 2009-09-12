@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <octave/oct.h>
 #include <octave/dMatrix.h>
 
@@ -38,33 +39,42 @@ DEFUN_DLD(price_option, args, , "Option Pricer")
   if ( resDim  == matExpy.dims() )
   {
     Matrix matResult(resDim);
-    // For every row in the matrix
-    for(unsigned int row=0;row < resDim(0); ++row)
-    {
-      for(unsigned int col=0; col < resDim(1); ++col)
-      {
-	// Looping this isn't efficient, ideally
-	// we'd take vectors into Haskell and treat
-	// them all at once - valuing each different
-	// stock and recording values at relevant
-	// expiries.  Still for now it will do...
-	double* arrayOfOneItem;
-	double myItem = matUnderl(row,col);
-	arrayOfOneItem = &myItem;
-	matResult(row,col) = *pricerInterface( arrayOfOneItem,
-				 	       1,
-					       strk,
-					       vol,
-					       matExpy(row,col),
-					       ir,
-					       ts,
-					       sims,
-					       rngStr,
-					       normStr,
-					       instrStr );
-      } 
-    }
+    // Const cast is naughty but safe - haskell won't mutate
+    double* const arrayOfUnderlyings = const_cast<double*>(matUnderl.fortran_vec());
+    double* const arrayOfExpiries    = const_cast<double*>(matExpy.fortran_vec());
     
+    // Your memory use on the return is shakey! The temp is destroyed before
+    // you use it - you're just lucky that this works and it is doomed to fail
+    // at some point!
+    // Two options as I see it.  Either pass in the result vector as a parameter
+    // then we can handle destruction here.  Or if we could try to use a smart
+    // pointer to kill itself once no longer referenced.  First option is better
+    // as the C interface is written in C not C++, so not sure how you could
+    // create a smart pointer.  You'd have to write it in C++ and expose a C
+    // interface to it.  Could probably just use auto_ptr as we shouldn't copy
+    // the data - init it for doubles to avoid using templates in C.
+    const double* const arrayOfResults  = pricerInterface( arrayOfUnderlyings,
+			  	  	                   matUnderl.nelem(),
+							   strk,
+							   vol,
+							   arrayOfExpiries,
+							   ir,
+							   ts,
+							   sims,
+							   rngStr,
+							   normStr,
+							   instrStr );
+     
+    
+    // Need to copy results into matrix
+    for(unsigned int col=0; col < resDim(1); ++col)
+    {
+      for(unsigned int row=0; row < resDim(0); ++row)
+      {
+	matResult(row,col) = arrayOfResults[(col*resDim(0))+row];
+      }
+    }
+
     return octave_value(matResult);
   }
   else
