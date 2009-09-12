@@ -15,7 +15,7 @@ HC_OPTS_RELEASE := -O2
 HC_OPTS_DEBUG   :=
 HC_OPTS_PROFILE := -prof -auto-all -caf-all -O2
 HC_OPTS_FFI     := -O0 
-PACKAGES        := -package mtl
+PACKAGES        := -package mtl -package parallel
 OC              := mkoctfile
 OC_OPTS         := -v -lCInterface -L$(LIBDIR)
 
