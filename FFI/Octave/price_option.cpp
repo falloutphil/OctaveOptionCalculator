@@ -48,16 +48,20 @@ DEFUN_DLD(price_option, args, , "Option Pricer")
 	// them all at once - valuing each different
 	// stock and recording values at relevant
 	// expiries.  Still for now it will do...
-	matResult(row,col) = pricerInterface( matUnderl(row,col),
-					      strk,
-					      vol,
-					      matExpy(row,col),
-					      ir,
-					      ts,
-					      sims,
-					      rngStr,
-					      normStr,
-					      instrStr );
+	double* arrayOfOneItem;
+	double myItem = matUnderl(row,col);
+	arrayOfOneItem = &myItem;
+	matResult(row,col) = *pricerInterface( arrayOfOneItem,
+				 	       1,
+					       strk,
+					       vol,
+					       matExpy(row,col),
+					       ir,
+					       ts,
+					       sims,
+					       rngStr,
+					       normStr,
+					       instrStr );
       } 
     }
     

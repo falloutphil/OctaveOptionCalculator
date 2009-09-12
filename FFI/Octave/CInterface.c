@@ -21,18 +21,19 @@ void exit_CInterface(void)
 }
 
 
-double pricerInterface( double underl,
-		        double strk,
-		        double vol,
-		        double expy,
-		        double ir,
-		        int    ts,
-		        int    sims,
-                        char*  rngStr,
-                        char*  normalStr,
-		        char*  instrStr )
+double* pricerInterface( double* underl,
+			size_t  underlSize,
+		        double  strk,
+		        double  vol,
+		        double  expy,
+		        double  ir,
+		        int     ts,
+		        int     sims,
+                        char*   rngStr,
+                        char*   normalStr,
+		        char*   instrStr )
 {
-  return priceOption( underl, strk, vol, expy, ir, ts, sims, 
+  return priceOption( underl, underlSize, strk, vol, expy, ir, ts, sims, 
                       rngStr, normalStr, instrStr );
 }
 

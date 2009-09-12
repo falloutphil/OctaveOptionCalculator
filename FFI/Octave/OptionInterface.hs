@@ -1,10 +1,12 @@
- {-# LANGUAGE ForeignFunctionInterface#-}
+ {-# LANGUAGE ForeignFunctionInterface, ScopedTypeVariables#-}
 
 module FFI.Octave.OptionInterface 
     where
 
 import Foreign.C.Types
 import Foreign.C.String
+import Foreign.Ptr
+import Foreign.Marshal.Array
 import System.IO.Unsafe
 
 import MonteCarlo.DataStructures
@@ -13,8 +15,8 @@ import Normal.Interface
 import MonteCarlo.Interface
 import FrameworkInterface
 
-priceOption :: CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CString -> CString -> CString -> CDouble
-priceOption underl strk vol expy ir ts sims rng norm instr = 
+priceOption :: Ptr CDouble -> CSize -> CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CString -> CString -> CString -> Ptr CDouble
+priceOption underl underlSize strk vol expy ir ts sims rng norm instr = 
 
     let userData  = MonteCarloUserData { strike       = realToFrac strk,
                                          putCall      = Call,
@@ -24,7 +26,11 @@ priceOption underl strk vol expy ir ts sims rng norm instr =
                                          timeSteps    = fromIntegral ts }	
 
         numOfSims  = fromIntegral sims
-        underlying = realToFrac underl
+        
+        -- Convert C array into haskell list of doubles
+        underlying = [ realToFrac value | value <- unsafePerformIO $ peekArray (fromIntegral underlSize) underl ]
+
+
         haskNorm   = unsafePerformIO $ peekCString norm
         normalType = normalChooser haskNorm
         tsteps = let ts' = timeSteps userData
@@ -35,11 +41,13 @@ priceOption underl strk vol expy ir ts sims rng norm instr =
         haskInstr        = unsafePerformIO $ peekCString instr
         contractType     = contractChooser haskInstr underlying
         sumOfPayOffs     = getResultFn numOfSims rngType normalType contractType $ userData
-        averagePayOff    = sumOfPayOffs / fromIntegral numOfSims
-        discountedPayOff = averagePayOff * exp (-1 * interestRate userData * expiry userData)
-       in realToFrac discountedPayOff
+        averagePayOff    = map (*(1/(fromIntegral numOfSims))) sumOfPayOffs
+        discountedPayOff = map (* exp (-1 * interestRate userData * expiry userData)) averagePayOff
+        convertToCDouble :: [CDouble] = map realToFrac discountedPayOff
+        convertToArray   = newArray convertToCDouble 
+       in unsafePerformIO convertToArray
 
-foreign export ccall priceOption :: CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CString -> CString -> CString -> CDouble
+foreign export ccall priceOption :: Ptr CDouble -> CSize -> CDouble -> CDouble -> CDouble -> CDouble -> CInt -> CInt -> CString -> CString -> CString -> Ptr CDouble
 
 
 
