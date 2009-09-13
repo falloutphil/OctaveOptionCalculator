@@ -14,7 +14,7 @@ data ContractType = ContractTypeEuropean European |
 contractChooser :: String -> [Double] -> ContractType
 contractChooser contractStr initialValue 
    | contractStr == "European" = ContractTypeEuropean (European initialValue)
-   | contractStr == "Lookback" = ContractTypeLookback (Lookback $ zip (repeat 0) initialValue)
+   | contractStr == "Lookback" = ContractTypeLookback (Lookback $ ((repeat 0), initialValue))
    | otherwise                 = ContractTypeEuropean (European initialValue)
 
 
