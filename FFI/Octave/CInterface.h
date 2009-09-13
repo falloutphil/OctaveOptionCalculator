@@ -18,6 +18,7 @@ double* pricerInterface( double* underl,
 			 double  ir,
 			 int     ts,
 			 int     sims,
+			 char*   putCallStr,
 			 char*   rngStr,
 			 char*   normalStr,
 			 char*   instrStr );

@@ -2,9 +2,9 @@
 
 # Default build type (profile if not specified on command line)
 build    := profile
-BUILDDIR := build/$(build)
-BINDIR   := bin/$(build)
-LIBDIR   := lib/$(build)
+BUILDDIR := ./build/$(build)
+BINDIR   := ./bin/$(build)
+LIBDIR   := ./lib/$(build)
 # Needed for Octave execution environment 
 LD_LIBRARY_PATH := $(LIBDIR):$(LD_LIBRARY_PATH)
 
@@ -135,15 +135,13 @@ octave : hs_init.oct hs_exit.oct price_option.oct
 
 # Octave tests
 #   Set GNUTERM to avoid X11 errors and redirect 
-#   result to null.  This is very daft.  But
-#   seemingly if I then remove the print statement
-#   from the m-script it doesn't create a valid png.
-#   Thus we create 2 and throw away one.
-#   Cheaper option is to pipe to 'dumb' but this
-#   creates (non-fatal) errors because you can't
-#   create a 3D plot in text.  Best to avoid errors.
+#   result to null.  As of 3.2.2 I can't set this
+#   to png without getting errors.  Setting it
+#   to dumb will give a continuous colour error
+#   but it still works.  A bit ugly.
 octave_tests : octave
-	$(foreach file,$(MSRCS),export GNUTERM=png;octave -q -p $(LIBDIR) $(file) > /dev/null)
+	$(foreach file,$(MSRCS),export GNUTERM=dumb;octave -q -p $(LIBDIR) $(file) > /dev/null)
+
 
 
 # Create function definitions

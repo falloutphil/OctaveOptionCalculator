@@ -9,7 +9,7 @@ using namespace std;
 
 DEFUN_DLD(price_option, args, , "Option Pricer")
 {
-  if (args.length() != 10)
+  if (args.length() != 11)
   {
     cout<<"see : help price_option";
     return octave_value();
@@ -22,17 +22,16 @@ DEFUN_DLD(price_option, args, , "Option Pricer")
   const double ir        = args(4).double_value();
   const int    ts        = args(5).int_value();
   const int    sims      = args(6).int_value();
-  // Not very safe, but we know Haskell can't
-  // mutate, so this will be safe if we're careful.
-  // Decided to use const_cast here as it is
-  // on-balance safer than using a C-style cast in the
-  // C-code.  However it does mean our variable
-  // is potentially exposed for the next few lines.
-  // Of course the pointer is kept const, we won't
-  // be changing this.
-  char* const  rngStr   = const_cast<char*>(args(7).string_value().c_str());
-  char* const  normStr  = const_cast<char*>(args(8).string_value().c_str());
-  char* const  instrStr = const_cast<char*>(args(9).string_value().c_str());
+  // Some strange shit is going down here.  What
+  // we want here is a char* to the strings, but
+  // if we do this as a one liner all sorts of
+  // strange behaviour occurs.  For whatever reason
+  // storing in a string and delaying cast till later
+  // seems to work (see below)!
+  const string putCallStr = args(7).string_value();
+  const string rngStr     = args(8).string_value();
+  const string normStr    = args(9).string_value();
+  const string instrStr   = args(10).string_value();
   
   const dim_vector& resDim = matUnderl.dims();
 
@@ -61,9 +60,10 @@ DEFUN_DLD(price_option, args, , "Option Pricer")
 							   ir,
 							   ts,
 							   sims,
-							   rngStr,
-							   normStr,
-							   instrStr );
+							   const_cast<char*>(putCallStr.c_str()),
+							   const_cast<char*>(rngStr.c_str()),
+							   const_cast<char*>(normStr.c_str()),
+							   const_cast<char*>(instrStr.c_str()) );
      
     
     // Need to copy results into matrix
