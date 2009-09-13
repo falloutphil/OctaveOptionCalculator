@@ -1,24 +1,60 @@
-% Test our Haskell function in Octave
+% Test our Haskell functions in Octave
 
+% Init Yapso 
+% Scaling is screwed use GNUPlot for now
+%pkg load yapso;
+
+
+% Init Haskel runtime
 hs_init()
 
-T     = 2:-0.05:0;
-S0    = 20:80;
-K     = 50;
-sigma = 0.4;
-r     = 0.1;
-ts    = 1;
-sims  = 1000;
-[X,Y] = meshgrid(T,S0);
-f = @(time,price) \
-    price_option(price,K,sigma,time,r,ts,sims,'Call','Halton','Box Muller','European');
-surf(X,Y,f(X,Y));
-title('Option Surface - Struck at 50');
-xlabel('Time to Expiry');
-ylabel('Initial Stock Price');
-% Must be able format better than this!
-zlabel('Value');
-% See makefile about print usage
-print('OctaveTest.png', '-S720,480')
+n = 50;
+% Option Parameters
+expiries     = linspace(0,2,n);
+underlying   = linspace(20,80,n); 
+strike       = 50;
+vol          = 0.4;
+ir           = 0.1;
+ts_euro      = 1;
+ts_lookback  = 24;
+sims         = 1000;
 
+% Create grid of 'time to expiry' vs 'initial underlying'
+[X,Y] = meshgrid(expiries,underlying);
+
+% Create option functions with 2 variables for plotting
+european = @(expiry,underl) \
+           price_option(underl,strike,vol,expiry,ir,ts_euro,sims,'Call','Halton','Box Muller','European');
+lookback = @(expiry,underl) \
+           price_option(underl,strike,vol,expiry,ir,ts_lookback,sims,'Call','Ranq1','Acklam','Lookback');
+
+
+% European calculation and plot
+subplot(2,1,1);
+Z1 = european(X,Y);
+% Must surf BEFORE we add labels!
+surf(X,Y,Z1,Z1)
+title('European Call Option Surface - Struck at 50')
+xlabel('Time to Expiry')
+ylabel('Initial Stock Price')
+zlabel('Value')
+shading faceted
+colorbar
+
+% Lookback calculation and plot
+subplot(2,1,2);
+Z2 = lookback(X,Y);
+surf(X,Y,Z2,Z2)
+title('Lookback Call Option Surface - Struck at 50')
+xlabel('Time to Expiry')
+ylabel('Initial Stock Price')
+zlabel('Value')
+shading faceted
+colorbar
+
+
+% Write result to file
+print('OctaveTest.png', '-S1280,960')
+
+% Exit Haskell runtime
 hs_exit()
