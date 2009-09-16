@@ -5,8 +5,7 @@ build    := profile
 BUILDDIR := ./build/$(build)
 BINDIR   := ./bin/$(build)
 LIBDIR   := ./lib/$(build)
-# Needed for Octave execution environment 
-LD_LIBRARY_PATH := $(LIBDIR):$(LD_LIBRARY_PATH)
+
 
 # Compiler, etc defaults
 HC              := ghc
@@ -16,6 +15,7 @@ HC_OPTS_DEBUG   :=
 HC_OPTS_PROFILE := -prof -auto-all -caf-all -O2
 HC_OPTS_FFI     := -O0 
 PACKAGES        := -package mtl -package parallel
+OCTAVE          := octave
 OC              := mkoctfile
 OC_OPTS         := -v -lCInterface -L$(LIBDIR)
 
@@ -140,7 +140,7 @@ octave : hs_init.oct hs_exit.oct price_option.oct
 #   to dumb will give a continuous colour error
 #   but it still works.  A bit ugly.
 octave_tests : octave
-	$(foreach file,$(MSRCS),export GNUTERM=dumb;octave -q -p $(LIBDIR) $(file) > /dev/null)
+	$(foreach file,$(MSRCS),export GNUTERM=dumb;export LD_LIBRARY_PATH=$(LIBDIR):$(LD_LIBRARY_PATH);$(OCTAVE) -q -p $(LIBDIR) $(file) > /dev/null)
 
 
 
