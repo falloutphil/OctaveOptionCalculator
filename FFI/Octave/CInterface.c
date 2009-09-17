@@ -26,23 +26,25 @@ void init_CInterface(void)
   // Pointer to start of instance name
   //   - note this MUST be static because
   //     argv dictates we pass a pointer to
-  //     this rather than the *value* pointer
-  static char          *pInstanceString;
+  //     this rather than the *value* pointer.
+  //     Each pointer we pass must be unique - hence
+  //     the array.
+  static char*         pInstanceString[NUM_OF_INSTANCES];
   // Command line argument strings
   //   - not static because this is passed
   //     by value
-  char                 **argv[2];
-  // Loop counter
-  unsigned int         instanceNumber;
+  char**               argv[2];
+
 
   // If we run out of unique instance ids, handle it
-  pInstanceString = id >= (INSTANCE_STR_LEN-1) ?
-                          &overflowName[0] :
-                          &instanceNames[id][0];
+  pInstanceString[id] = id >= (INSTANCE_STR_LEN-1) ?
+                              &overflowName[0] :
+                              &instanceNames[id][0];
   
-  // if 0 then initialise our array, either way increment instance
-  if (!id++)
+  // if 0 then initialise our array
+  if (!id)
   {
+    unsigned int instanceNumber;
     for( instanceNumber = 0;
 	 instanceNumber < NUM_OF_INSTANCES;
 	 ++instanceNumber )
@@ -52,7 +54,8 @@ void init_CInterface(void)
   }
   
   // Setup 'program name' and terminate array
-  argv[0] = &pInstanceString;
+  // Increment our instance counter
+  argv[0] = &pInstanceString[id++];
   argv[1] = &terminator;
  
   // Pass 'program' and args to Haskell initialiser 
