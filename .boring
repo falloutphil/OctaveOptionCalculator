@@ -134,3 +134,5 @@
 \_stub.[ch]$
 # Ignore Octave compiled functions
 \.oct$
+# Ignore Octave crashes
+\octave-core$

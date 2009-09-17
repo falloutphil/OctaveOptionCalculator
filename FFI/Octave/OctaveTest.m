@@ -1,15 +1,15 @@
 % Test our Haskell functions in Octave
 
-% Init Yapso 
-% Scaling is screwed use GNUPlot for now
-%pkg load yapso;
-
-
 % Init Haskel runtime
+% If you are running this manually
+% inside octave then comment out
+% init and exit functions and run
+% them manually once per session.
+% http://hackage.haskell.org/trac/ghc/ticket/2863
 hs_init()
 
-n = 50;
 % Option Parameters
+n = 50;
 expiries     = linspace(0,2,n);
 underlying   = linspace(20,80,n); 
 strike       = 50;
@@ -25,9 +25,9 @@ sims         = 1000;
 % Create option functions with 2 variables for plotting
 european = @(expiry,underl) \
            price_option(underl,strike,vol,expiry,ir,ts_euro,sims,'Call','Halton','Box Muller','European');
+
 lookback = @(expiry,underl) \
            price_option(underl,strike,vol,expiry,ir,ts_lookback,sims,'Call','Ranq1','Acklam','Lookback');
-
 
 % European calculation and plot
 subplot(2,1,1);
@@ -51,7 +51,6 @@ ylabel('Initial Stock Price')
 zlabel('Value')
 shading faceted
 colorbar
-
 
 % Write result to file
 print('OctaveTest.png', '-S1280,960')
