@@ -17,11 +17,15 @@ import MonteCarlo.Framework
 -- and produces a result.
 getResultFn :: Int -> RngType -> NormalType -> ContractType 
                -> ( MonteCarloUserData -> [Double] )
-getResultFn numOfSims rng norm (ContractTypeEuropean euro)  = 
+getResultFn numOfSims rng norm (ContractTypeEuropean euro)     = 
    getNormalAndRngFn numOfSims rng norm $ euro
-getResultFn numOfSims rng norm (ContractTypeLookback lb)    = 
+getResultFn numOfSims rng norm (ContractTypeLookback lb)       = 
   getNormalAndRngFn numOfSims rng norm $ lb
- 
+getResultFn numOfSims rng norm (ContractTypeAsianAvRate rateAsian)  = 
+  getNormalAndRngFn numOfSims rng norm $ rateAsian
+getResultFn numOfSims rng norm (ContractTypeAsianAvStrike strikeAsian) = 
+  getNormalAndRngFn numOfSims rng norm $ strikeAsian
+
 
 getNormalAndRngFn :: McClass a =>
                      Int -> RngType -> NormalType -> 

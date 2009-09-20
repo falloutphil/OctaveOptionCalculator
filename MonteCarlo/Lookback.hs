@@ -21,7 +21,8 @@ instance McClass Lookback where
       StateT $ \(Lookback maxStateTupleList) -> do norm <- nextNormal
                                                    let newState = Lookback $ evolveLookback userData maxStateTupleList norm
                                                    return ( () , newState )
-   toValue (Lookback (maxList,_)) = maxList
+
+   payOff (Lookback (maxList,_)) userData = map (payOffStandard  (putCall userData) (strike userData)) maxList
 
 
 evolveLookback :: MonteCarloUserData -> (([Double],[Double]) -> Double -> ([Double],[Double]))

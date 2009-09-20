@@ -7,6 +7,7 @@ module MonteCarlo.European
 
 import Control.Monad.State.Strict
 
+import MonteCarlo.DataStructures
 import MonteCarlo.Framework
 import Normal.Framework
 
@@ -19,7 +20,8 @@ instance McClass European where
       StateT $ \(European s) -> do norm <- nextNormal
                                    let !newState = evolveClosedForm userData s norm
                                    return ( (), European newState )
-   toValue (European value) = value
+   
+   payOff (European values) userData = map (payOffStandard (putCall userData) (strike userData)) values
 
 
 
