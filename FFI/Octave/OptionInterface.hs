@@ -21,7 +21,7 @@ priceOption underl underlSize strk vol expy ir ts sims putOrCall rng norm instr 
     -- Lets make out C types into Haskell equivalents
     let underlying = [ realToFrac value | value <- unsafePerformIO $ peekArray (fromIntegral underlSize) underl ]
         hsExpy     = [ realToFrac value | value <- unsafePerformIO $ peekArray (fromIntegral underlSize) expy   ]
-        hsBarrier  = replicate (length underlying) 80
+        hsBarrier  = replicate (length underlying) 40
         numOfSims  = fromIntegral sims        
         pc =  unsafePerformIO $ peekCString putOrCall
          
