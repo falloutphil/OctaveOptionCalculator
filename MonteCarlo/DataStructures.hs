@@ -15,4 +15,5 @@ data MonteCarloUserData = MonteCarloUserData
      volatility   :: Double,
      expiry       :: [Double],
      interestRate :: Double,
-     timeSteps    :: Int  }
+     timeSteps    :: Int,
+     barrier      :: [Double] }

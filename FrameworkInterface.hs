@@ -25,6 +25,11 @@ getResultFn numOfSims rng norm (ContractTypeAsianAvRate rateAsian)  =
   getNormalAndRngFn numOfSims rng norm $ rateAsian
 getResultFn numOfSims rng norm (ContractTypeAsianAvStrike strikeAsian) = 
   getNormalAndRngFn numOfSims rng norm $ strikeAsian
+getResultFn numOfSims rng norm (ContractTypeBinary binary) = 
+  getNormalAndRngFn numOfSims rng norm $ binary
+getResultFn numOfSims rng norm (ContractTypeDownAndOut dao) = 
+  getNormalAndRngFn numOfSims rng norm $ dao
+
 
 
 getNormalAndRngFn :: McClass a =>
